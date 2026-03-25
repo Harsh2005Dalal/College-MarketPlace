@@ -14,10 +14,23 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const allowedOrigins = [
+  ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : []),
+  ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean) : []),
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+];
 
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL || "http://localhost:5173", "http://localhost:5174", "https://college-market-place-opal.vercel.app"],
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true,
   })
 );

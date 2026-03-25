@@ -13,6 +13,9 @@ const getTransporter = () => {
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT || 587),
     secure: process.env.SMTP_SECURE === "true",
+    connectionTimeout: Number(process.env.SMTP_CONNECTION_TIMEOUT_MS || 10000),
+    greetingTimeout: Number(process.env.SMTP_GREETING_TIMEOUT_MS || 10000),
+    socketTimeout: Number(process.env.SMTP_SOCKET_TIMEOUT_MS || 15000),
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
@@ -30,11 +33,16 @@ export const sendMail = async ({ to, subject, text, html }) => {
     return;
   }
 
-  await transporter.sendMail({
-    from: process.env.SMTP_FROM || process.env.SMTP_USER,
-    to,
-    subject,
-    text,
-    html,
-  });
+  await Promise.race([
+    transporter.sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to,
+      subject,
+      text,
+      html,
+    }),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("SMTP send timeout. Check provider/network settings.")), Number(process.env.SMTP_SEND_TIMEOUT_MS || 15000))
+    ),
+  ]);
 };
