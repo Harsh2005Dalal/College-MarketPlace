@@ -33,16 +33,22 @@ export const sendMail = async ({ to, subject, text, html }) => {
     return;
   }
 
-  await Promise.race([
-    transporter.sendMail({
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
-      to,
-      subject,
-      text,
-      html,
-    }),
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("SMTP send timeout. Check provider/network settings.")), Number(process.env.SMTP_SEND_TIMEOUT_MS || 15000))
-    ),
-  ]);
+  try {
+    await Promise.race([
+      transporter.sendMail({
+        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+        to,
+        subject,
+        text,
+        html,
+      }),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("SMTP send timeout")), 15000)
+      ),
+    ]);
+    console.log("✅ Mail sent");
+  } catch (err) {
+    console.error("❌ MAIL ERROR:", err);
+    throw err;
+  }
 };
