@@ -52,9 +52,16 @@ app.get("/api/meta/ngo", (_req, res) => {
   });
 });
 
+
+
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/admin", adminRoutes);
+
+app.use((err, req, res, next) => {
+  console.error("🔥 GLOBAL ERROR:", err);
+  res.status(500).json({ message: err.message || "Internal Server Error" });
+});
 
 const start = async () => {
   try {
