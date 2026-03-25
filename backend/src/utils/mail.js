@@ -1,36 +1,42 @@
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer';
+import { google } from 'googleapis';
 
-export const sendMail = async ({ to, subject, text, html }) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // TLS
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-      tls: {
-        rejectUnauthorized: false, // helps in cloud sometimes
-      },
-      connectionTimeout: 30000,
-      socketTimeout: 30000,
-    });
+const getTransporter = async () => {
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.GMAIL_CLIENT_ID,
+    process.env.GMAIL_CLIENT_SECRET,
+    'https://developers.google.com/oauthplayground'
+  );
 
-    console.log("📨 Sending mail to:", to);
+  oauth2Client.setCredentials({
+    refresh_token: process.env.GMAIL_REFRESH_TOKEN
+  });
 
-    const info = await transporter.sendMail({
-      from: `"College Marketplace" <${process.env.SMTP_USER}>`,
-      to,
-      subject,
-      text,
-      html,
-    });
+  const accessToken = await oauth2Client.getAccessToken();
 
-    console.log("✅ Mail sent:", info.messageId);
-    return info;
-  } catch (error) {
-    console.error("❌ MAIL ERROR:", error);
-    throw error;
-  }
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      type: 'OAuth2',
+      user: process.env.GMAIL_EMAIL,
+      clientId: process.env.GMAIL_CLIENT_ID,
+      clientSecret: process.env.GMAIL_CLIENT_SECRET,
+      refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+      accessToken: accessToken.token,
+    },
+  });
 };
+
+const sendMail = async ({ to, subject, html, text }) => {
+  const transporter = await getTransporter();
+
+  return transporter.sendMail({
+    from: `"IIT Ropar Marketplace" <${process.env.GMAIL_EMAIL}>`,
+    to,
+    subject,
+    html,
+    text,
+  });
+};
+
+export default sendMail;

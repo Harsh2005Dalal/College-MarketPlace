@@ -6,7 +6,7 @@ import { authRequired } from "../middleware/auth.js";
 import Otp from "../models/Otp.js";
 import PasswordReset from "../models/PasswordReset.js";
 import User from "../models/User.js";
-import { sendMail } from "../utils/mail.js";
+import sendMail from "../utils/mail.js";
 
 const router = express.Router();
 const collegeDomain = "@iitrpr.ac.in";
@@ -30,7 +30,7 @@ router.post("/send-otp", async (req, res) => {
     await sendMail({
       to: email,
       subject: "IIT Ropar Marketplace OTP",
-      text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
+      html: `Your OTP is ${otp}. It is valid for 10 minutes.`,
     });
 
     res.json({ message: "OTP sent successfully" });
