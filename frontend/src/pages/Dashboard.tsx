@@ -37,15 +37,29 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="premium-shell py-8 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">My Products</h1>
-          <button onClick={() => onNavigate("add-product")} className="bg-blue-600 text-white px-6 py-3 rounded-lg">Add Product</button>
+          <h1 className="text-3xl font-bold text-white">My Products</h1>
+          <button onClick={() => onNavigate("add-product")} className="btn-primary">Add Product</button>
         </div>
-        <div className="bg-white rounded-xl shadow-sm mb-6 flex">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="premium-card p-4">
+            <p className="text-sm text-slate-400">Available</p>
+            <p className="text-2xl font-bold text-white">{products.filter((p) => p.status === "available").length}</p>
+          </div>
+          <div className="premium-card p-4">
+            <p className="text-sm text-slate-400">Sold</p>
+            <p className="text-2xl font-bold text-white">{products.filter((p) => p.status === "sold").length}</p>
+          </div>
+          <div className="premium-card p-4">
+            <p className="text-sm text-slate-400">Donated</p>
+            <p className="text-2xl font-bold text-white">{products.filter((p) => p.status === "donated").length}</p>
+          </div>
+        </div>
+        <div className="premium-card mb-6 flex">
           {(["available", "sold", "donated"] as const).map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={`flex-1 px-6 py-4 ${tab === t ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600"}`}>{t.toUpperCase()}</button>
+            <button key={t} onClick={() => setTab(t)} className={`flex-1 px-6 py-4 font-medium transition-colors ${tab === t ? "text-indigo-300 border-b-2 border-indigo-400" : "text-slate-400"}`}>{t.toUpperCase()}</button>
           ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -54,22 +68,22 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
               <ProductCard product={product} />
               {tab === "available" && (
                 <div className="mt-3 flex gap-2">
-                  <button onClick={() => mark(product._id, "sold")} className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm">Mark Sold</button>
-                  <button onClick={() => mark(product._id, "donated")} className="flex-1 bg-orange-600 text-white py-2 rounded-lg text-sm">Donate NGO</button>
-                  <button onClick={() => remove(product._id)} className="bg-red-600 text-white px-3 rounded-lg text-sm">Delete</button>
+                  <button onClick={() => mark(product._id, "sold")} className="flex-1 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white py-2 text-sm font-medium shadow-sm transition-all hover:-translate-y-0.5">Mark Sold</button>
+                  <button onClick={() => mark(product._id, "donated")} className="flex-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-white py-2 text-sm font-medium shadow-sm transition-all hover:-translate-y-0.5">Donate NGO</button>
+                  <button onClick={() => remove(product._id)} className="rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white px-3 text-sm font-medium shadow-sm transition-all hover:-translate-y-0.5">Delete</button>
                 </div>
               )}
             </div>
           ))}
         </div>
         {ngo && (
-          <div className="mt-8 bg-white rounded-xl shadow-sm p-5">
-            <h3 className="text-lg font-semibold mb-2">NGO Donation Contact</h3>
-            <p className="text-sm text-gray-700">{ngo.name}</p>
-            {ngo.email && <p className="text-sm text-gray-600">Email: {ngo.email}</p>}
-            {ngo.phone && <p className="text-sm text-gray-600">Phone: {ngo.phone}</p>}
-            {ngo.upi && <p className="text-sm text-gray-600">UPI: {ngo.upi}</p>}
-            {ngo.note && <p className="text-sm text-gray-500 mt-2">{ngo.note}</p>}
+          <div className="mt-8 premium-card p-5">
+            <h3 className="text-lg font-semibold mb-2 text-white">NGO Donation Contact</h3>
+            <p className="text-sm text-slate-200">{ngo.name}</p>
+            {ngo.email && <p className="text-sm text-slate-300">Email: {ngo.email}</p>}
+            {ngo.phone && <p className="text-sm text-slate-300">Phone: {ngo.phone}</p>}
+            {ngo.upi && <p className="text-sm text-slate-300">UPI: {ngo.upi}</p>}
+            {ngo.note && <p className="text-sm text-slate-400 mt-2">{ngo.note}</p>}
           </div>
         )}
       </div>

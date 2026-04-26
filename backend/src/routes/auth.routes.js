@@ -3,7 +3,6 @@ import crypto from "crypto";
 import express from "express";
 import jwt from "jsonwebtoken";
 import { authRequired } from "../middleware/auth.js";
-import Otp from "../models/Otp.js";
 import PasswordReset from "../models/PasswordReset.js";
 import User from "../models/User.js";
 import sendMail from "../utils/mail.js";
@@ -16,45 +15,17 @@ const signToken = (userId) =>
     expiresIn: "7d",
   });
 
-router.post("/send-otp", async (req, res) => {
-  try {
-    const email = String(req.body.email || "").toLowerCase().trim();
-    if (!email.endsWith(collegeDomain)) {
-      return res.status(400).json({ message: "Only @iitrpr.ac.in email addresses are allowed" });
-    }
-
-    const otp = String(Math.floor(100000 + Math.random() * 900000));
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
-    await Otp.findOneAndUpdate({ email }, { otp, expiresAt }, { upsert: true, new: true });
-
-    await sendMail({
-      to: email,
-      subject: "IIT Ropar Marketplace OTP",
-      html: `Your OTP is ${otp}. It is valid for 10 minutes.`,
-    });
-
-    res.json({ message: "OTP sent successfully" });
-  } catch (error) {
-      console.error("❌ SEND OTP ERROR:", error); // ADD THIS
-      res.status(500).json({ message: error.message || "Failed to send OTP" });
-  }
-});
 
 router.post("/signup", async (req, res) => {
   try {
     const email = String(req.body.email || "").toLowerCase().trim();
-    const { fullName, phone, password, otp } = req.body;
+    const { fullName, phone, password } = req.body;
 
     if (!email.endsWith(collegeDomain)) {
       return res.status(400).json({ message: "Only @iitrpr.ac.in email addresses are allowed" });
     }
     if (!password || String(password).length < 6) {
       return res.status(400).json({ message: "Password must be at least 6 characters" });
-    }
-
-    const otpDoc = await Otp.findOne({ email });
-    if (!otpDoc || otpDoc.otp !== String(otp) || otpDoc.expiresAt < new Date()) {
-      return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 
     const exists = await User.findOne({ email });
@@ -68,7 +39,6 @@ router.post("/signup", async (req, res) => {
       password: hashedPassword,
     });
 
-    await Otp.deleteOne({ email });
     const token = signToken(user._id.toString());
 
     res.status(201).json({

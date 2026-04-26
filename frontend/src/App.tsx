@@ -20,7 +20,7 @@ function AppContent() {
     }
   }, []);
 
-  if (loading) return <div className="p-10 text-center">Loading...</div>;
+  if (loading) return <div className="premium-shell p-10 text-center text-slate-700">Loading...</div>;
 
   if (!user) {
     if (currentPage === "signup") return <Signup onNavigate={setCurrentPage} />;
@@ -30,7 +30,7 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="premium-shell">
       <Header currentPage={currentPage} onNavigate={setCurrentPage} />
       {currentPage === "marketplace" && <Marketplace />}
       {currentPage === "dashboard" && <Dashboard onNavigate={setCurrentPage} />}

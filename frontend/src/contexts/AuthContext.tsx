@@ -10,11 +10,9 @@ type AuthContextType = {
     password: string;
     fullName: string;
     phone: string;
-    otp: string;
   }) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
-  sendOtp: (email: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (token: string, password: string) => Promise<void>;
 };
@@ -49,9 +47,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       loading,
-      async sendOtp(email) {
-        await apiFetch("/auth/send-otp", { method: "POST", body: JSON.stringify({ email }) });
-      },
       async signUp(payload) {
         const data = await apiFetch("/auth/signup", { method: "POST", body: JSON.stringify(payload) });
         localStorage.setItem("token", data.token);

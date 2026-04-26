@@ -31,20 +31,22 @@ export default function AddProduct({ onNavigate }: { onNavigate: (page: string) 
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm p-8">
-        <h1 className="text-3xl font-bold mb-6">List Your Product</h1>
+    <div className="premium-shell py-12 px-4">
+      <div className="max-w-3xl mx-auto premium-card p-8">
+        <p className="text-indigo-200 text-sm mb-2">Create Campus Listing</p>
+        <h1 className="text-3xl font-bold mb-2 text-white">List Your Product</h1>
+        <p className="text-slate-300 mb-6">Add clear details so other students can quickly discover your item.</p>
         {error && <div className="mb-4 text-sm text-red-700 bg-red-50 p-3 rounded-lg">{error}</div>}
         <form onSubmit={submit} className="space-y-4">
-          <input name="title" className="w-full px-4 py-3 border rounded-lg" placeholder="Title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-          <textarea name="description" className="w-full px-4 py-3 border rounded-lg" placeholder="Description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-          <input name="price" type="number" min="0" className="w-full px-4 py-3 border rounded-lg" placeholder="Price" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} required />
-          <select className="w-full px-4 py-3 border rounded-lg" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>{categories.map((x) => <option key={x}>{x}</option>)}</select>
-          <select className="w-full px-4 py-3 border rounded-lg" value={formData.condition} onChange={(e) => setFormData({ ...formData, condition: e.target.value })}>{conditions.map((x) => <option key={x}>{x}</option>)}</select>
-          <input name="imageUrl" className="w-full px-4 py-3 border rounded-lg" placeholder="Image URL (optional)" value={formData.imageUrl} onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })} />
+          <input name="title" className="premium-input" placeholder="Title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+          <textarea name="description" className="premium-input min-h-28" placeholder="Description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          <input name="price" type="number" min="0" className="premium-input" placeholder="Price" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} required />
+          <select aria-label="Product category" className="premium-select" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>{categories.map((x) => <option key={x}>{x}</option>)}</select>
+          <select aria-label="Product condition" className="premium-select" value={formData.condition} onChange={(e) => setFormData({ ...formData, condition: e.target.value })}>{conditions.map((x) => <option key={x}>{x}</option>)}</select>
+          <input name="imageUrl" className="premium-input" placeholder="Image URL (optional)" value={formData.imageUrl} onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })} />
           <div className="flex gap-4">
-            <button type="button" onClick={() => onNavigate("dashboard")} className="flex-1 px-6 py-3 border rounded-lg">Cancel</button>
-            <button disabled={loading} className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg">{loading ? "Adding..." : "List Product"}</button>
+            <button type="button" onClick={() => onNavigate("dashboard")} className="btn-secondary flex-1">Cancel</button>
+            <button disabled={loading} className="btn-primary flex-1">{loading ? "Adding..." : "List Product"}</button>
           </div>
         </form>
       </div>

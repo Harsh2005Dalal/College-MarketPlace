@@ -24,17 +24,17 @@ export default function Login({ onNavigate }: { onNavigate: (page: string) => vo
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-        <div className="text-center mb-8"><LogIn className="w-8 h-8 text-white bg-blue-600 rounded-full p-1 mx-auto mb-3" /><h2 className="text-3xl font-bold">Welcome Back</h2></div>
+    <div className="premium-shell flex items-center justify-center px-4 py-12">
+      <div className="premium-card max-w-md w-full p-8">
+        <div className="text-center mb-8"><LogIn className="w-8 h-8 text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-full p-1 mx-auto mb-3" /><h2 className="text-3xl font-bold text-white">Welcome Back</h2></div>
         {error && <div className="mb-4 text-sm text-red-700 bg-red-50 p-3 rounded-lg">{error}</div>}
         <form onSubmit={submit} className="space-y-4">
-          <input className="w-full px-4 py-3 border rounded-lg" type="email" placeholder="your.name@iitrpr.ac.in" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <input className="w-full px-4 py-3 border rounded-lg" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          <button type="button" className="text-sm text-blue-600" onClick={() => onNavigate("forgot-password")}>Forgot password?</button>
-          <button disabled={loading} className="w-full bg-blue-600 text-white py-3 rounded-lg">{loading ? "Signing in..." : "Sign In"}</button>
+          <input className="premium-input" type="email" placeholder="entry_number@iitrpr.ac.in" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input className="premium-input" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <button type="button" className="text-sm text-indigo-300 hover:text-violet-300 transition-colors" onClick={() => onNavigate("forgot-password")}>Forgot password?</button>
+          <button disabled={loading} className="btn-primary w-full">{loading ? "Signing in..." : "Sign In"}</button>
         </form>
-        <p className="mt-5 text-center text-sm">No account? <button className="text-blue-600" onClick={() => onNavigate("signup")}>Sign up</button></p>
+        <p className="mt-5 text-center text-sm text-slate-300">No account? <button className="text-indigo-300 hover:text-violet-300 transition-colors" onClick={() => onNavigate("signup")}>Sign up</button></p>
       </div>
     </div>
   );

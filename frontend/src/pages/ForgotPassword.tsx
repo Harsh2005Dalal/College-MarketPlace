@@ -23,16 +23,16 @@ export default function ForgotPassword({ onNavigate }: { onNavigate: (page: stri
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-        <h2 className="text-2xl font-bold mb-4">Forgot Password</h2>
+    <div className="premium-shell flex items-center justify-center p-4">
+      <div className="premium-card max-w-md w-full p-8">
+        <h2 className="text-2xl font-bold mb-4 text-white">Forgot Password</h2>
         {error && <div className="mb-4 text-sm text-red-700 bg-red-50 p-3 rounded-lg">{error}</div>}
         {message && <div className="mb-4 text-sm text-green-700 bg-green-50 p-3 rounded-lg">{message}</div>}
         <form onSubmit={submit} className="space-y-4">
-          <input className="w-full px-4 py-3 border rounded-lg" type="email" placeholder="your.name@iitrpr.ac.in" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <button disabled={loading} className="w-full bg-blue-600 text-white py-3 rounded-lg">{loading ? "Sending..." : "Send Reset Link"}</button>
+          <input className="premium-input" type="email" placeholder="your.name@iitrpr.ac.in" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <button disabled={loading} className="btn-primary w-full">{loading ? "Sending..." : "Send Reset Link"}</button>
         </form>
-        <button className="text-blue-600 mt-4" onClick={() => onNavigate("login")}>Back to login</button>
+        <button className="text-indigo-300 hover:text-violet-300 transition-colors mt-4" onClick={() => onNavigate("login")}>Back to login</button>
       </div>
     </div>
   );
