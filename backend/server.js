@@ -38,6 +38,15 @@ app.use(
 );
 app.use(express.json({ limit: "2mb" }));
 
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    ok: true,
+    service: "college-marketplace-backend",
+    message: "Backend is running",
+    health: "/api/health",
+  });
+});
+
 app.use((req, res, next) => {
   const requestId = req.headers["x-request-id"] || crypto.randomUUID();
   req.requestId = String(requestId);
