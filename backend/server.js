@@ -3,6 +3,7 @@ dotenv.config();
 import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 import path from "path";
 import { fileURLToPath } from "url";
@@ -13,6 +14,7 @@ import adminRoutes from "./src/routes/admin.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const DEBUG_LOGS = String(process.env.DEBUG_LOGS || "true") === "true";
 const allowedOrigins = [
   ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : []),
   ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean) : []),
@@ -34,6 +36,42 @@ app.use(
   })
 );
 app.use(express.json({ limit: "2mb" }));
+
+app.use((req, res, next) => {
+  const requestId = req.headers["x-request-id"] || crypto.randomUUID();
+  req.requestId = String(requestId);
+  res.setHeader("X-Request-Id", req.requestId);
+
+  const start = Date.now();
+  if (DEBUG_LOGS) {
+    console.log(
+      JSON.stringify({
+        type: "REQUEST_START",
+        requestId: req.requestId,
+        method: req.method,
+        path: req.originalUrl,
+        origin: req.headers.origin || null,
+        ip: req.ip,
+      })
+    );
+  }
+
+  res.on("finish", () => {
+    if (!DEBUG_LOGS) return;
+    console.log(
+      JSON.stringify({
+        type: "REQUEST_END",
+        requestId: req.requestId,
+        method: req.method,
+        path: req.originalUrl,
+        status: res.statusCode,
+        durationMs: Date.now() - start,
+      })
+    );
+  });
+
+  next();
+});
 
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
@@ -58,18 +96,33 @@ app.use("/api/products", productRoutes);
 app.use("/api/admin", adminRoutes);
 
 app.use((err, req, res, next) => {
-  console.error("🔥 GLOBAL ERROR:", err);
-  res.status(500).json({ message: err.message || "Internal Server Error" });
+  console.error(
+    JSON.stringify({
+      type: "REQUEST_ERROR",
+      requestId: req.requestId || null,
+      method: req.method,
+      path: req.originalUrl,
+      message: err.message || "Internal Server Error",
+      stack: err.stack || null,
+    })
+  );
+  res.status(500).json({
+    message: err.message || "Internal Server Error",
+    requestId: req.requestId || null,
+  });
 });
 
 const start = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
+    if (DEBUG_LOGS) {
+      console.log(JSON.stringify({ type: "DB_CONNECTED", host: mongoose.connection.host, name: mongoose.connection.name }));
+    }
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(JSON.stringify({ type: "SERVER_STARTED", port: PORT, env: process.env.NODE_ENV || "development" }));
     });
   } catch (error) {
-    console.error("Failed to start server:", error);
+    console.error(JSON.stringify({ type: "SERVER_START_FAILED", message: error.message, stack: error.stack || null }));
     process.exit(1);
   }
 };
