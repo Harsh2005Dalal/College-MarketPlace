@@ -14,6 +14,7 @@ import adminRoutes from "./src/routes/admin.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || "0.0.0.0";
 const DEBUG_LOGS = String(process.env.DEBUG_LOGS || "true") === "true";
 const allowedOrigins = [
   ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : []),
@@ -118,8 +119,16 @@ const start = async () => {
     if (DEBUG_LOGS) {
       console.log(JSON.stringify({ type: "DB_CONNECTED", host: mongoose.connection.host, name: mongoose.connection.name }));
     }
-    app.listen(PORT, () => {
-      console.log(JSON.stringify({ type: "SERVER_STARTED", port: PORT, env: process.env.NODE_ENV || "development" }));
+    app.listen(PORT, HOST, () => {
+      console.log(
+        JSON.stringify({
+          type: "SERVER_STARTED",
+          port: PORT,
+          host: HOST,
+          env: process.env.NODE_ENV || "development",
+          platformPort: process.env.PORT || null,
+        })
+      );
     });
   } catch (error) {
     console.error(JSON.stringify({ type: "SERVER_START_FAILED", message: error.message, stack: error.stack || null }));
