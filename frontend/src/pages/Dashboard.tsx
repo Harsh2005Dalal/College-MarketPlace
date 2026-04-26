@@ -7,6 +7,12 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
   const [products, setProducts] = useState<Product[]>([]);
   const [tab, setTab] = useState<"available" | "sold" | "donated">("available");
   const [ngo, setNgo] = useState<{ name: string; email: string; phone: string; upi: string; note: string } | null>(null);
+  const [ngoDetails, setNgoDetails] = useState<NgoDetails>({
+    name: "Kaashika Chopra",
+    email: "2024meb1355@iitrpr.ac.in",
+    phone: "8208510447",
+    note: "Products marked donated are handed over by marketplace admin."
+  });
 
   const load = async () => {
     const data = await apiFetch("/products/me");
@@ -76,14 +82,13 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
             </div>
           ))}
         </div>
-        {ngo && (
+        {ngoDetails && (
           <div className="mt-8 premium-card p-5">
             <h3 className="text-lg font-semibold mb-2 text-white">NGO Donation Contact</h3>
-            <p className="text-sm text-slate-200">{ngo.name}</p>
-            {ngo.email && <p className="text-sm text-slate-300">Email: {ngo.email}</p>}
-            {ngo.phone && <p className="text-sm text-slate-300">Phone: {ngo.phone}</p>}
-            {ngo.upi && <p className="text-sm text-slate-300">UPI: {ngo.upi}</p>}
-            {ngo.note && <p className="text-sm text-slate-400 mt-2">{ngo.note}</p>}
+            {ngoDetails.name && <p className="text-sm text-slate-300">Name: {ngoDetails.name}</p>}
+            {ngoDetails.email && <p className="text-sm text-slate-300">Email: {ngoDetails.email}</p>}
+            {ngoDetails.phone && <p className="text-sm text-slate-300">Phone: {ngoDetails.phone}</p>}
+            {ngoDetails.note && <p className="text-sm text-slate-400 mt-2">{ngoDetails.note}</p>}
           </div>
         )}
       </div>
